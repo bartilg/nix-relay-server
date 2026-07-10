@@ -17,6 +17,11 @@
     ];
   };
 
+  # Give bart direct ownership of the system config repo
+  systemd.tmpfiles.rules = [
+    "Z /etc/nixos - bart users - -"
+  ];
+
   home-manager.users.bart = {
     imports = [
       ../home/core.nix
