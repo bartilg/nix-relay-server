@@ -1,0 +1,7 @@
+{
+  hostName = "iris";
+
+  firewall = {
+    trustedInterfaces = [ ];
+  };
+}

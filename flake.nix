@@ -40,7 +40,15 @@
           { nixpkgs.overlays = [ overlay ]; }
         ];
       };
-
+      nixosConfigurations.iris = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./hosts/iris
+          inputs.home-manager.nixosModules.default
+          { nixpkgs.overlays = [ overlay ]; }
+        ];
+      };
       homeConfigurations = import ./home/users.nix {
         inherit pkgs home-manager;
       };
