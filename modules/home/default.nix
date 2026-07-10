@@ -4,6 +4,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    backupFileExtension = "hm-backup";
 
     sharedModules = [
       ./shell/zsh.nix

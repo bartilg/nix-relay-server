@@ -15,7 +15,6 @@
 
   programs.neovim = {
     enable = true;
-    package = pkgs.neovim;
     defaultEditor = true;
     vimAlias = true;
     viAlias = true;
