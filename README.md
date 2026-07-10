@@ -40,12 +40,13 @@ sudo nixos-rebuild switch --flake path:/etc/nixos#nix01
 The compose files are managed in `stacks/`, but mutable application data and secrets live outside the repo:
 
 - `/var/lib/homelab/pihole/pihole.env`
-- `/var/lib/homelab/pihole/nebula-sync.env`
 - `/var/lib/homelab/pihole/etc-pihole/`
 - `/var/lib/homelab/pihole/etc-dnsmasq.d/`
 - `/var/lib/homelab/traefik/traefik.env`
 - `/var/lib/homelab/traefik/acme.json`
 
 Use the matching `env.example` files in `stacks/` as templates. The stack services are skipped until their required env files exist.
+
+Nebula Sync is kept as an optional compose override in `stacks/pihole/compose.nebula-sync.yaml`; the default relay stack does not require it.
 
 The shared Docker network is created by Nix as `proxy` with the stable bridge interface `br-proxy`. If an older `proxy` network exists with a different bridge, the Nix-managed network unit recreates it.

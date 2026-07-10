@@ -20,7 +20,6 @@ in
 
     unitConfig.ConditionPathExists = [
       envFile
-      "/var/lib/homelab/pihole/nebula-sync.env"
     ];
 
     serviceConfig = {
