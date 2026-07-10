@@ -5,6 +5,7 @@
     ../modules/docker.nix
     ../modules/containers
     ../modules/shell
+    ../modules/home
     ../modules/monitoring
     ../modules/nvim/nvchad.nix
   ];
