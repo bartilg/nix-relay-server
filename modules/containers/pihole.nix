@@ -15,6 +15,13 @@ let
   ]
   ++ lib.optional cfg.nebulaSync.enable "${stackDir}/compose.nebula-sync.yaml";
   composeFileArgs = lib.concatMapStringsSep " " (f: "-f ${f}") composeFiles;
+  composeUp = pkgs.writeShellScript "homelab-pihole-up" ''
+    exec ${pkgs.docker}/bin/docker compose \
+      --env-file ${envFile} \
+      ${composeFileArgs} \
+      --project-name pihole \
+      up -d --remove-orphans
+  '';
 in
 {
   options.services.homelabPihole.nebulaSync.enable = lib.mkEnableOption ''
@@ -44,20 +51,15 @@ in
         Type = "oneshot";
         RemainAfterExit = true;
         WorkingDirectory = "${stackDir}";
+        ExecStart = composeUp;
+        # Reload re-runs `up -d` without the `down` a restart would trigger
+        ExecReload = composeUp;
       };
 
       preStart = ''
         ${pkgs.coreutils}/bin/mkdir -p \
           /var/lib/homelab/pihole/etc-pihole \
           /var/lib/homelab/pihole/etc-dnsmasq.d
-      '';
-
-      script = ''
-        ${pkgs.docker}/bin/docker compose \
-          --env-file ${envFile} \
-          ${composeFileArgs} \
-          --project-name pihole \
-          up -d --remove-orphans
       '';
 
       preStop = ''

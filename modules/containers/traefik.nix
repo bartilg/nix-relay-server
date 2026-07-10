@@ -4,6 +4,13 @@ let
   stackDir = ../../stacks/traefik;
   compose = "${stackDir}/compose.yaml";
   envFile = "/var/lib/homelab/traefik/traefik.env";
+  composeUp = pkgs.writeShellScript "homelab-traefik-up" ''
+    exec ${pkgs.docker}/bin/docker compose \
+      --env-file ${envFile} \
+      -f ${compose} \
+      --project-name traefik \
+      up -d --remove-orphans
+  '';
 in
 {
   systemd.services.homelab-traefik = {
@@ -24,6 +31,9 @@ in
       Type = "oneshot";
       RemainAfterExit = true;
       WorkingDirectory = "${stackDir}";
+      ExecStart = composeUp;
+      # Reload re-runs `up -d` without the `down` a restart would trigger
+      ExecReload = composeUp;
     };
 
     preStart = ''
@@ -31,14 +41,6 @@ in
       if [ ! -e /var/lib/homelab/traefik/acme.json ]; then
         ${pkgs.coreutils}/bin/install -m 600 /dev/null /var/lib/homelab/traefik/acme.json
       fi
-    '';
-
-    script = ''
-      ${pkgs.docker}/bin/docker compose \
-        --env-file ${envFile} \
-        -f ${compose} \
-        --project-name traefik \
-        up -d --remove-orphans
     '';
 
     preStop = ''
