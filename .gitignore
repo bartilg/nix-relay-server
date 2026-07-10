@@ -1,9 +1,11 @@
-# Ignore build outputs from performing a nix-build or `nix build` command
-result
-result-*
+/result
+/result-*
+/.direnv/
+/.env
+*.env
+acme.json
 
-# Ignore automatically generated direnv output
-.direnv
-
-# Ignore NixOS interactive test driver history
-**/.nixos-test-history
+# Runtime container state belongs under /var/lib/homelab, not in this repo.
+/stacks/**/data/
+/stacks/**/etc-pihole/
+/stacks/**/etc-dnsmasq.d/
