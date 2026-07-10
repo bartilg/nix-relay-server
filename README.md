@@ -35,6 +35,12 @@ Build or switch a host with:
 sudo nixos-rebuild switch --flake path:/etc/nixos#nix01
 ```
 
+## Dependency Updates
+
+Renovate scans the Nix flake inputs and Docker Compose images and opens update pull requests. The configuration also enables periodic `flake.lock` maintenance.
+
+Install the [Mend Renovate GitHub App](https://github.com/apps/renovate) for this repository to activate the scans. Renovate reads its repository settings from `renovate.json`.
+
 ## Container State And Secrets
 
 The compose files are managed in `stacks/`, but mutable application data and secrets live outside the repo:
