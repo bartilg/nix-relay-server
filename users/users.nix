@@ -20,6 +20,8 @@
   # Give bart direct ownership of the system config repo
   systemd.tmpfiles.rules = [
     "Z /etc/nixos - bart users - -"
+    # Empty marker so zsh-newuser-install doesn't run; real config is in /etc/zshrc
+    "f /home/bart/.zshrc 0644 bart users - -"
   ];
 
   home-manager.users.bart = {
