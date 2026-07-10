@@ -10,6 +10,7 @@ Reusable NixOS flake for DNS relay hosts.
 - `hosts/<hostname>/hardware-configuration.nix` is generated per host with `nixos-generate-config`.
 - `profiles/relay-base.nix` contains the shared DNS relay host template.
 - `modules/` contains reusable service modules.
+- `scripts/bootstrap.sh` creates the mutable Compose directories and env files.
 - `modules/containers/` maps the Compose projects into systemd services.
 - `stacks/` owns the Compose files, container env-file paths, volumes, and non-secret app config.
 - `users/` contains system user definitions.
@@ -37,22 +38,20 @@ sudo nixos-rebuild switch --flake .#nix01
 
 ## Fresh Host Setup
 
-Before the first rebuild, create the Compose-owned env files from the repository templates:
+Before the first rebuild, run the interactive bootstrap script:
 
 ```sh
-sudo install -d -m 700 /var/lib/homelab/pihole /var/lib/homelab/traefik
-sudo install -m 600 stacks/pihole/env.example /var/lib/homelab/pihole/pihole.env
-sudo install -m 600 stacks/traefik/env.example /var/lib/homelab/traefik/traefik.env
-sudoedit /var/lib/homelab/pihole/pihole.env
-sudoedit /var/lib/homelab/traefik/traefik.env
+sudo ./scripts/bootstrap.sh
 ```
 
-On the Pi-hole leader only, also configure Nebula Sync:
+It creates the required directories, prompts for the Pi-hole and Traefik settings, generates the dashboard password hash, and writes mode `0600` env files. It infers the Nebula Sync leader default from the current host settings; this can also be selected explicitly:
 
 ```sh
-sudo install -m 600 stacks/pihole/nebula-sync.env.example /var/lib/homelab/pihole/nebula-sync.env
-sudoedit /var/lib/homelab/pihole/nebula-sync.env
+sudo ./scripts/bootstrap.sh --leader
+sudo ./scripts/bootstrap.sh --replica
 ```
+
+Existing env files are preserved. Use `--force` to replace selected files after confirmation.
 
 Then run the host rebuild. Nix enables Docker and starts the Compose projects. Each reconciliation ensures the shared `proxy` network exists before Compose runs. Compose creates the application data directories and Traefik's `acme.json` as needed.
 
