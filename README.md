@@ -47,6 +47,8 @@ The compose files are managed in `stacks/`, but mutable application data and sec
 
 Use the matching `env.example` files in `stacks/` as templates. The stack services are skipped until their required env files exist.
 
-Nebula Sync is kept as an optional compose override in `stacks/pihole/compose.nebula-sync.yaml`; the default relay stack does not require it.
+The Traefik route to the Pi-hole web UI is set per location with `PIHOLE_TRAEFIK_HOST` in `pihole.env` (defaults to `pihole.local.ilghost.party` if unset).
+
+Nebula Sync follows a leader model: only the leader host runs it (`piholeNebulaSyncLeader = true` in that host's `settings.nix`, currently nix01) and pushes its Pi-hole config to the replicas listed in `/var/lib/homelab/pihole/nebula-sync.env`. Replica hosts set the flag to `false`, run only the plain Pi-hole stack, and receive the leader's changes.
 
 The shared Docker network is created by Nix as `proxy` with the stable bridge interface `br-proxy`. If an older `proxy` network exists with a different bridge, the Nix-managed network unit recreates it.

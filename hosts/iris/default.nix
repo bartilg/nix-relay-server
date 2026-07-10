@@ -10,6 +10,8 @@ in
 
   networking.hostName = settings.hostName;
 
+  services.homelabPihole.nebulaSync.enable = settings.piholeNebulaSyncLeader;
+
   networking.firewall = {
     trustedInterfaces = settings.firewall.trustedInterfaces;
   };
