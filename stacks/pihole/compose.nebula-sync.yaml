@@ -8,8 +8,5 @@ services:
     networks:
       - proxy
     depends_on:
-      - pihole
-
-networks:
-  proxy:
-    external: true
+      pihole:
+        condition: service_healthy

@@ -3,8 +3,12 @@
 {
   virtualisation.docker = {
     enable = true;
-    enableOnBoot = true;
-    rootless.enable = false;
+
+    autoPrune = {
+      enable = true;
+      dates = "weekly";
+      flags = [ "--all" ];
+    };
 
     daemon.settings = {
       "log-driver" = "journald";

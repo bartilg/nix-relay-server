@@ -1,0 +1,30 @@
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:2026.07.2
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "5006:80/tcp"
+    env_file:
+      - /var/lib/homelab/pihole/pihole.env
+    environment:
+      FTLCONF_webserver_api_password: ${PIHOLE_WEBPASSWORD:?set PIHOLE_WEBPASSWORD in pihole.env}
+      FTLCONF_dns_listeningMode: "ALL"
+    volumes:
+      - /var/lib/homelab/pihole/etc-pihole:/etc/pihole
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.pihole.entrypoints=https"
+      - "traefik.http.routers.pihole.rule=Host(`${PIHOLE_TRAEFIK_HOST:-pihole.local.ilghost.party}`)"
+      - "traefik.http.routers.pihole.tls=true"
+      - "traefik.http.routers.pihole.tls.certresolver=cloudflare"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
+
+networks:
+  proxy:
+    external: true

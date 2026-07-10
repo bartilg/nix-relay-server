@@ -1,4 +1,8 @@
 http:
+  serversTransports:
+    insecure:
+      insecureSkipVerify: true
+
   routers:
     thoth:
       entryPoints:
@@ -6,7 +10,6 @@ http:
       rule: "Host(`thoth.local.ilghost.party`)"
       middlewares:
         - default-headers
-        - https-redirectscheme
       tls: &cloudflare_tls
         certResolver: cloudflare
         domains:
@@ -20,7 +23,6 @@ http:
       rule: "Host(`truenas.local.ilghost.party`)"
       middlewares:
         - default-headers
-        - https-redirectscheme
       tls: *cloudflare_tls
       service: truenas
     victorialogs:
@@ -29,7 +31,6 @@ http:
       rule: "Host(`victorialogs.local.ilghost.party`)"
       middlewares:
         - default-headers
-        - https-redirectscheme
       tls: *cloudflare_tls
       service: victorialogs
     victoriametrics:
@@ -38,37 +39,29 @@ http:
       rule: "Host(`victoriametrics.local.ilghost.party`)"
       middlewares:
         - default-headers
-        - https-redirectscheme
       tls: *cloudflare_tls
       service: victoriametrics
 
   services:
     thoth:
       loadBalancer:
+        serversTransport: insecure
         servers:
           - url: "https://192.168.70.38:9090"
-        passHostHeader: true
     truenas:
       loadBalancer:
         servers:
           - url: "http://192.168.70.11:80"
-        passHostHeader: true
     victorialogs:
       loadBalancer:
         servers:
           - url: "http://192.168.70.11:9428"
-        passHostHeader: true
     victoriametrics:
       loadBalancer:
         servers:
           - url: "http://192.168.70.11:8428"
-        passHostHeader: true
 
   middlewares:
-    https-redirectscheme:
-      redirectScheme:
-        scheme: https
-        permanent: true
     default-headers:
       headers:
         frameDeny: true
@@ -81,13 +74,3 @@ http:
         customFrameOptionsValue: SAMEORIGIN
         customRequestHeaders:
           X-Forwarded-Proto: https
-    default-whitelist:
-      ipAllowList:
-        sourceRange:
-          - "192.168.0.0/16"
-          - "172.16.0.0/12"
-    secured:
-      chain:
-        middlewares:
-          - default-whitelist
-          - default-headers

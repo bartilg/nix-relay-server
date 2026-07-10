@@ -3,11 +3,20 @@
 let
   # Bridge name must stay "br-proxy": the firewall trusts that interface
   ensureNetwork = pkgs.writeShellScript "homelab-ensure-proxy-network" ''
-    ${pkgs.docker}/bin/docker network inspect proxy >/dev/null 2>&1 || \
+    if ${pkgs.docker}/bin/docker network inspect proxy >/dev/null 2>&1; then
+      bridge="$(${pkgs.docker}/bin/docker network inspect proxy \
+        --format '{{ index .Options "com.docker.network.bridge.name" }}')"
+      if [ "$bridge" != "br-proxy" ]; then
+        echo "Docker network 'proxy' exists with bridge '$bridge'; expected 'br-proxy'." >&2
+        echo "Stop the Compose stacks and remove the incompatible network before rebuilding." >&2
+        exit 1
+      fi
+    else
       ${pkgs.docker}/bin/docker network create \
         --driver bridge \
         --opt com.docker.network.bridge.name=br-proxy \
         proxy
+    fi
   '';
 in
 {
@@ -21,9 +30,9 @@ in
       Type = "oneshot";
       RemainAfterExit = true;
       ExecStart = ensureNetwork;
-      # Reload re-checks the network without stopping the unit, which would
-      # propagate to the stacks through their Requires=
       ExecReload = ensureNetwork;
     };
+
+    reloadIfChanged = true;
   };
 }
