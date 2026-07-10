@@ -54,7 +54,7 @@ sudo install -m 600 stacks/pihole/nebula-sync.env.example /var/lib/homelab/pihol
 sudoedit /var/lib/homelab/pihole/nebula-sync.env
 ```
 
-Then run the host rebuild. Nix enables Docker, creates the shared `proxy` network, and starts the Compose projects. Compose creates the application data directories and Traefik's `acme.json` as needed.
+Then run the host rebuild. Nix enables Docker and starts the Compose projects. Each reconciliation ensures the shared `proxy` network exists before Compose runs. Compose creates the application data directories and Traefik's `acme.json` as needed.
 
 ## Compose Lifecycle
 
@@ -93,4 +93,4 @@ The Traefik route to the Pi-hole web UI is set per location with `PIHOLE_TRAEFIK
 
 Nebula Sync follows a leader model: only the leader host runs it (`piholeNebulaSyncLeader = true` in that host's `settings.nix`, currently nix01) and pushes its Pi-hole config to the replicas listed in `/var/lib/homelab/pihole/nebula-sync.env`. Replica hosts set the flag to `false`, run only the plain Pi-hole stack, and receive the leader's changes.
 
-The shared Docker network is created by Nix as `proxy` with the stable bridge interface `br-proxy`, which is trusted by the NixOS firewall. An existing incompatible `proxy` network causes the network unit to fail with cleanup instructions instead of disconnecting containers automatically.
+The Nix-to-Compose mapping creates the shared Docker network as `proxy` with the stable bridge interface `br-proxy`, which is trusted by the NixOS firewall. Every stack reconciliation recreates a missing network and rejects an existing network that uses an incompatible bridge.
