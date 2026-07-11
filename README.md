@@ -76,6 +76,10 @@ Renovate scans the Nix flake inputs and Docker Compose images and opens update p
 
 Install the [Mend Renovate GitHub App](https://github.com/apps/renovate) for this repository to activate the scans. Renovate reads its repository settings from `renovate.json`.
 
+## Continuous Integration
+
+GitHub Actions builds the complete `nix01` and `iris` NixOS system closures for pull requests targeting `main`. The workflow runs on the repository-scoped ARC scale set named `nix-relay-nixos`, which provides Nix on x86-64. Configure the repository's `main` branch protection to require the `Build NixOS configurations` check before merging.
+
 ## Container State And Secrets
 
 The compose files are managed in `stacks/`, but mutable application data and secrets live outside the repo:
