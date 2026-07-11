@@ -29,14 +29,6 @@ jobs:
 
       - name: Build all hosts
         run: |
-          nix build --keep-failed --print-build-logs \
+          nix build --print-build-logs \
             .#nixosConfigurations.nix01.config.system.build.toplevel \
             .#nixosConfigurations.iris.config.system.build.toplevel
-
-      - name: Inspect failed build filesystem
-        if: failure()
-        run: |
-          id
-          findmnt -T /nix
-          grep '^Cap' /proc/self/status
-          find /nix/var/nix/builds -maxdepth 3 -printf '%U:%G %m %p\n' | tail -n 80
