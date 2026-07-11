@@ -19,7 +19,7 @@ Reusable NixOS flake for DNS relay hosts.
 ## Adding A Host
 
 1. Create `hosts/<hostname>/default.nix`.
-2. Create `hosts/<hostname>/settings.nix` with the hostname and host-specific firewall exceptions.
+2. Create `hosts/<hostname>/settings.nix` with the hostname, host-specific firewall exceptions, and an `autoUpgradeDates` slot that does not overlap the other relays.
 3. Copy or generate that machine's `hardware-configuration.nix` into `hosts/<hostname>/`.
 4. Import `../../profiles/relay-base.nix`, `../../users/users.nix`, and any host-specific modules needed by that host.
 5. Add a matching entry to `nixosConfigurations` in `flake.nix`.
@@ -69,6 +69,21 @@ sudo systemctl reload homelab-traefik.service
 ```
 
 Inspect deployment failures with `systemctl status` or `journalctl -u` for those units. Reconciliation errors are not suppressed.
+
+## Automatic Upgrades
+
+Each host runs `system.autoUpgrade` against this repository's flake on GitHub
+(`github:bartilg/nix-relay-server#<hostname>`), so merging to `main` is what
+deploys: the next scheduled run fetches the latest commit and rebuilds from its
+lock file. Renovate lock updates therefore roll out automatically once merged.
+
+The schedule is staggered per host via `autoUpgradeDates` in `settings.nix` so
+the DNS relays never restart at the same time. Kernel and systemd updates still
+require a manual reboot to take effect (`allowReboot` is off). Inspect runs with
+`journalctl -u nixos-upgrade.service`.
+
+The `/etc/nixos` checkout is no longer part of the upgrade path; it remains a
+convenience working copy for manual rebuilds.
 
 ## Dependency Updates
 
