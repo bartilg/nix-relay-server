@@ -5,7 +5,7 @@
   piholeNebulaSyncLeader = true;
 
   # Staggered per host so both DNS relays never restart at the same time
-  autoUpgradeDates = "Mon 04:30";
+  autoUpgradeDates = "Sat 04:30";
 
   firewall = {
     trustedInterfaces = [ ];

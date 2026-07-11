@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix4nvchad = {
@@ -45,6 +45,15 @@
         specialArgs = { inherit inputs; };
         modules = [
           ./hosts/iris
+          inputs.home-manager.nixosModules.default
+          { nixpkgs.overlays = [ overlay ]; }
+        ];
+      };
+      nixosConfigurations.hermes = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./hosts/hermes
           inputs.home-manager.nixosModules.default
           { nixpkgs.overlays = [ overlay ]; }
         ];
