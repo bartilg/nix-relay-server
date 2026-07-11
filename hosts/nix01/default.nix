@@ -16,6 +16,9 @@ in
     trustedInterfaces = settings.firewall.trustedInterfaces;
   };
 
-  system.autoUpgrade.flake = "path:/etc/nixos#${settings.hostName}";
+  system.autoUpgrade = {
+    flake = "github:bartilg/nix-relay-server#${settings.hostName}";
+    dates = settings.autoUpgradeDates;
+  };
   system.stateVersion = "24.11";
 }

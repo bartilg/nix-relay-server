@@ -21,10 +21,8 @@
     wheelNeedsPassword = false;
   };
 
-  system.autoUpgrade = {
-    enable = true;
-    dates = "weekly";
-  };
+  # Schedule (dates) is set per host from settings.nix so relays upgrade staggered.
+  system.autoUpgrade.enable = true;
 
   nix = {
     gc = {
